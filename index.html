@@ -26,7 +26,7 @@ body{
     box-shadow:0 15px 35px rgba(0,0,0,.4);
     border-top:8px solid #1b5e20;
 }
-h2{ text-align:center;color:#1b5e20;}
+h2{text-align:center;color:#1b5e20;}
 input{
     width:100%;
     padding:12px;
@@ -43,33 +43,19 @@ button{
     font-weight:bold;
     cursor:pointer;
 }
-.alta{background:#1b5e20;color:white;}
-.modificar{background:#2e7d32;color:white;}
-.eliminar{background:black;color:white;}
+button[value="alta"]{background:#1b5e20;color:white;}
+button[value="modificar"]{background:#2e7d32;color:white;}
+button[value="eliminar"]{background:black;color:white;}
 .buscar{background:#4caf50;color:white;}
-.nav{
-    display:flex;
-    justify-content:space-between;
-    margin-top:15px;
-}
+.nav{display:flex;justify-content:space-between;margin-top:15px;}
 .nav button{
     width:48%;
     background:white;
     color:#1b5e20;
     border:2px solid #1b5e20;
 }
-.nav button:hover{
-    background:#1b5e20;
-    color:white;
-}
-img{
-    display:block;
-    margin:10px auto;
-    border-radius:10px;
-}
-.section{display:none;}
-.section:target{display:block;}
-#usuario{display:block;}
+.nav button:hover{background:#1b5e20;color:white;}
+img{display:block;margin:10px auto;border-radius:10px;}
 </style>
 </head>
 
@@ -81,91 +67,96 @@ img{
 </div>
 
 <div class="box">
+<h2 id="titulo">👤 USUARIO</h2>
 
-<!-- USUARIO -->
-<div id="usuario" class="section">
-<h2>👤 USUARIO</h2>
-<input placeholder="ID / No. Control / Nombre">
-<input placeholder="Nombre">
-<input placeholder="Apellidos">
-<input placeholder="No. Control">
-<input placeholder="Edad">
-<input placeholder="Correo">
-<img src="imagenes/usuarios/default.jpg" width="150">
-<button class="alta">ALTA</button>
-<button class="modificar">MODIFICAR</button>
-<button class="eliminar">ELIMINAR</button>
-<button class="buscar">🔍 BUSCAR</button>
+<input id="id" placeholder="ID">
+<input id="c1" placeholder="nombre">
+<input id="c2" placeholder="apellido">
+<input id="c3" placeholder="no.control">
+<input id="c4" placeholder="edad">
+<input id="c5" placeholder="correo">
+<img src="imagenes/default.png" width="120">
+
+<button value="alta" onclick="alta()">ALTA</button>
+<button value="modificar" onclick="modificar()">MODIFICAR</button>
+<button value="eliminar" onclick="eliminar()">ELIMINAR</button>
+<button class="buscar" onclick="buscar()">🔍 BUSCAR</button>
+
+<form class="nav">
+<button type="button" onclick="anterior()">⬅️ ANTERIOR</button>
+<button type="button" onclick="siguiente()">SIGUIENTE ➡️</button>
+</form>
 </div>
 
-<!-- AUTOR -->
-<div id="autor" class="section">
-<h2>✍️ AUTOR</h2>
-<input placeholder="ID">
-<input placeholder="Nombre">
-<input placeholder="Nacionalidad">
-<button class="alta">ALTA</button>
-<button class="modificar">MODIFICAR</button>
-<button class="eliminar">ELIMINAR</button>
-<button class="buscar">🔍 BUSCAR</button>
-</div>
+<script>
+const paginas = ["usuario","autor","libro","ejemplar","prestamo"];
+let index = 0;
 
-<!-- LIBRO -->
-<div id="libro" class="section">
-<h2>📘 LIBRO</h2>
-<input placeholder="ID / Título">
-<input placeholder="Título">
-<input placeholder="Autor / Editorial">
-<input placeholder="Año">
-<img src="imagenes/libros/default.png" width="120">
-<button class="alta">ALTA</button>
-<button class="modificar">MODIFICAR</button>
-<button class="eliminar">ELIMINAR</button>
-<button class="buscar">🔍 BUSCAR</button>
-</div>
+function paginaActual(){ return paginas[index]; }
 
-<!-- EJEMPLAR -->
-<div id="ejemplar" class="section">
-<h2>📦 EJEMPLAR</h2>
-<input placeholder="ID">
-<input placeholder="Lugar">
-<button class="alta">ALTA</button>
-<button class="modificar">MODIFICAR</button>
-<button class="eliminar">ELIMINAR</button>
-<button class="buscar">🔍 BUSCAR</button>
-</div>
+function guardar(data){
+    localStorage.setItem(paginaActual(), JSON.stringify(data));
+}
+function obtener(){
+    return JSON.parse(localStorage.getItem(paginaActual())) || [];
+}
 
-<!-- PRESTAMO -->
-<div id="prestamo" class="section">
-<h2>📅 PRÉSTAMO</h2>
-<input placeholder="ID">
-<input type="date">
-<input type="date">
-<input placeholder="Usuario">
-<input placeholder="Libro">
-<input placeholder="Estado">
-<button class="alta">ALTA</button>
-<button class="modificar">MODIFICAR</button>
-<button class="eliminar">ELIMINAR</button>
-<button class="buscar">🔍 BUSCAR</button>
-</div>
+function alta(){
+    let data = obtener();
+    data.push({
+        id:id.value,
+        c1:c1.value,
+        c2:c2.value,
+        c3:c3.value,
+        c4:c4.value
+    });
+    guardar(data);
+    alert("Registro guardado");
+    limpiar();
+}
 
-<!-- NAVEGACIÓN -->
-<div class="nav">
-<a href="#usuario"><button>USUARIO</button></a>
-<a href="#autor"><button>AUTOR</button></a>
-</div>
+function buscar(){
+    let r = obtener().find(x => x.id === id.value);
+    if(r){
+        c1.value=r.c1; c2.value=r.c2;
+        c3.value=r.c3; c4.value=r.c4;
+    }else alert("No encontrado");
+}
 
-<div class="nav">
-<a href="#libro"><button>LIBRO</button></a>
-<a href="#ejemplar"><button>EJEMPLAR</button></a>
-</div>
+function modificar(){
+    let data = obtener();
+    let i = data.findIndex(x => x.id === id.value);
+    if(i>=0){
+        data[i]={id:id.value,c1:c1.value,c2:c2.value,c3:c3.value,c4:c4.value};
+        guardar(data);
+        alert("Registro modificado");
+    }else alert("No existe");
+}
 
-<div class="nav">
-<a href="#prestamo"><button>PRÉSTAMO</button></a>
-</div>
+function eliminar(){
+    guardar(obtener().filter(x => x.id !== id.value));
+    alert("Registro eliminado");
+    limpiar();
+}
 
-</div>
+function limpiar(){
+    id.value=c1.value=c2.value=c3.value=c4.value="";
+}
+
+function actualizarTitulo(){
+    document.getElementById("titulo").innerText = paginas[index].toUpperCase();
+    limpiar();
+}
+
+function siguiente(){
+    if(index < paginas.length-1){ index++; actualizarTitulo(); }
+}
+function anterior(){
+    if(index > 0){ index--; actualizarTitulo(); }
+}
+</script>
 
 </body>
 </html>
+
+
